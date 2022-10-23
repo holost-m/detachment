@@ -1,0 +1,54 @@
+@staticmethod
+    def __check_person(info_person):
+        if info_person[0].isdigit() and info_person[1].isdigit() and info_person[2].isdigit() and info_person[5].isdigit() and info_person[12].isdigit():
+            return True
+        else:
+            return False
+
+    @staticmethod
+    def __convert_person(info_person):
+        info_person_list = list(info_person)
+        for i in range(len(info_person_list)):
+            if i in (0, 1, 2, 3, 5, 8, 12, 13):
+                info_person_list[i] = int(info_person_list[i])
+        return info_person_list
+
+    # принимает кортеж значений info_person
+    def add_person(self, info_person):
+        if __check_person(info_person):
+            person = __convert_person(info_person)
+            self.cur.execute(f'INSERT INTO military_staff(position_id, mas_number, position_code, military_rank_code, full_name, year_of_birth, education, civil_specialty, mc_id, family_status,address, date_appointment, id_equipment, category) VALUES ({person});')
+            message = "Данные добавлены"
+            self.cur.close() # закрыли соединение
+        else:
+            message = "Ошибка! Данные не могут быть добавлены."
+        return
+
+
+
+#######################################
+
+@app.route("/index", methods = ["POST", "GET"])
+def index():
+    result, text= "", ""
+    if request.method == 'POST':
+        artist_name = request.form['artist_name']
+
+        with sql.connect("chinook.db") as con:
+            cur = con.cursor()
+            cur.execute(f'SELECT Title FROM artists_albums WHERE Name = "{artist_name}" ORDER BY 1')
+            result = [album[0] for album in cur.fetchall()]
+            print(artist_name)
+
+            if len(result) == 0:
+                text = f'Группы "{artist_name}" нет в базе данных'
+            elif None in result:
+                text = f'У группы "{artist_name}" нет альбомов'
+                result = ""
+            else:
+                text = f'Альбомы {artist_name}:'
+
+    return render_template('index.html', albums = result, name = text)
+
+if __name__ == "__main__":
+    app.run(debug=True)

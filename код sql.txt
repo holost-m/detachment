@@ -1,0 +1,245 @@
+PRAGMA foreign_keys=on;
+
+--штатные должности
+CREATE TABLE original_positions (
+position_id INTEGER PRIMARY KEY AUTOINCREMENT,
+division_code TEXT NOT NULL,
+position_code INTEGER NOT NULL,
+mas_number INTEGER NOT NULL,
+military_rank_code INTEGER NOT NULL,
+equipment_by_state TEXT,
+FOREIGN KEY (position_code) REFERENCES position_name(position_code),
+FOREIGN KEY (military_rank_code) REFERENCES military_rank(military_rank_code),
+FOREIGN KEY (mas_number) REFERENCES mas(mas_number)
+);
+
+--граждане прибывающие в запасе		
+CREATE TABLE military_staff (
+military_id INTEGER PRIMARY KEY AUTOINCREMENT,
+--
+position_id INTEGER NOT NULL,
+mas_number INTEGER NOT NULL,
+position_code INTEGER NOT NULL,
+military_rank_code INTEGER NOT NULL,
+full_name TEXT NOT NULL,
+year_of_birth INTEGER NOT NULL,
+education TEXT,
+civil_specialty TEXT,
+mc_id INTEGER NOT NULL,
+family_status TEXT,
+address TEXT NOT NULL,
+date_appointment TEXT,
+id_equipment INTEGER,
+category INTEGER NOT NULL,
+FOREIGN KEY (position_id) REFERENCES original_positions(position_id),
+FOREIGN KEY (position_code) REFERENCES position_name(position_code),
+FOREIGN KEY (military_rank_code) REFERENCES military_rank(military_rank_code),
+FOREIGN KEY (mc_id) REFERENCES military_commissariat(mc_id),
+FOREIGN KEY (id_equipment) REFERENCES intended_equipment(id_equipment),
+FOREIGN KEY (mas_number) REFERENCES mas(mas_number)
+);
+
+-- приписанная техника		
+CREATE TABLE intended_equipment(
+id_equipment INTEGER PRIMARY KEY AUTOINCREMENT,
+brand TEXT NOT NULL,
+state_number TEXT NOT NULL,
+year_of_release TEXT,
+mc_id INTEGER NOT NULL,
+company_id INTEGER NOT NULL,
+date_of_study TEXT,
+condition TEXT,
+FOREIGN KEY (mc_id) REFERENCES military_commissariat(mc_id),
+FOREIGN KEY (company_id) REFERENCES supplier_company(company_id)
+);		
+
+-- военные комиссариаты				
+CREATE TABLE military_commissariat (
+mc_id INTEGER PRIMARY KEY AUTOINCREMENT,
+mc_name TEXT NOT NULL,
+mc_boss TEXT,
+address TEXT,
+phone_number TEXT
+);
+
+-- предприятие - поставщик		
+CREATE TABLE supplier_company(
+company_id INTEGER PRIMARY KEY AUTOINCREMENT,
+company_name TEXT NOT NULL,
+address TEXT,
+phone_number TEXT,
+contact_person TEXT
+);		
+
+-- воинские звания		
+CREATE TABLE military_rank	(
+military_rank_code INTEGER PRIMARY KEY,
+military_rank_name TEXT NOT NULL
+);
+
+-- наименование должности		
+CREATE TABLE position_name	(
+position_code INTEGER PRIMARY KEY,
+position_name TEXT NOT NULL
+);
+
+CREATE TABLE mas	(
+mas_number INTEGER PRIMARY KEY,
+mas_name TEXT NOT NULL
+);
+
+
+--вставка воинских званий и их кодов
+INSERT INTO military_rank(military_rank_code, military_rank_name)
+VALUES (223, "рядовой");
+INSERT INTO military_rank(military_rank_code, military_rank_name)
+VALUES (224, "младший сержант");
+INSERT INTO military_rank(military_rank_code, military_rank_name)
+VALUES (225, "сержант");
+INSERT INTO military_rank(military_rank_code, military_rank_name)
+VALUES (226, "старший сержант");
+INSERT INTO military_rank(military_rank_code, military_rank_name)
+VALUES (227, "прапорщик");
+INSERT INTO military_rank(military_rank_code, military_rank_name)
+VALUES (228, "старший прапорщик");
+INSERT INTO military_rank(military_rank_code, military_rank_name)
+VALUES (561, "лейтенант");
+INSERT INTO military_rank(military_rank_code, military_rank_name)
+VALUES (562, "старший лейтенант");
+INSERT INTO military_rank(military_rank_code, military_rank_name)
+VALUES (563, "капитан");
+INSERT INTO military_rank(military_rank_code, military_rank_name)
+VALUES (564, "майор");
+INSERT INTO military_rank(military_rank_code, military_rank_name)
+VALUES (565, "подполковник");
+INSERT INTO military_rank(military_rank_code, military_rank_name)
+VALUES (566, "полковник");
+
+
+--вставка наименований должностей и их кодов
+INSERT INTO position_name(position_code, position_name)
+VALUES (111, "Командир взвода");
+INSERT INTO position_name(position_code, position_name)
+VALUES (222, "Техник (ГДЗС)");	
+INSERT INTO position_name(position_code, position_name)
+VALUES (333, "Заместитель командира взвода");	
+INSERT INTO position_name(position_code, position_name)
+VALUES (444, "Командир отделения");	
+INSERT INTO position_name(position_code, position_name)
+VALUES (555, "Старший пожарный");	
+INSERT INTO position_name(position_code, position_name)
+VALUES (666, "Пожарный");
+INSERT INTO position_name(position_code, position_name)
+VALUES (777, "Водитель-пожарный");	
+
+-- вставка военно-учетных спецальностей и их кодов
+INSERT INTO mas(mas_number, mas_name)
+VALUES (233, "Управление пожарным взводом");	
+INSERT INTO mas(mas_number, mas_name)
+VALUES (567, "Техническое обеспечение подразделений");	
+INSERT INTO mas(mas_number, mas_name)
+VALUES (331, "Командир пожарного отделения");	
+INSERT INTO mas(mas_number, mas_name)
+VALUES (120, "Пожарный");	
+INSERT INTO mas(mas_number, mas_name)
+VALUES (837, "Водитель");	
+
+-- вставка штатных должностей (код подразделения, код должности, ВУС, Код в/зв)
+-- командир взвода
+INSERT INTO original_positions (division_code, position_code,
+mas_number, military_rank_code) VALUES ("А", 111, 233, 562);
+-- заместитель командира взвода
+INSERT INTO original_positions (division_code, position_code,
+mas_number, military_rank_code) VALUES ("А", 333, 233, 226);
+-- техник ГДЗС
+INSERT INTO original_positions (division_code, position_code,
+mas_number, military_rank_code) VALUES ("А", 222, 567, 227);
+-- Командир отделения
+INSERT INTO original_positions (division_code, position_code,
+mas_number, military_rank_code) VALUES ("А", 444, 331, 225);
+-- Старший пожарный
+INSERT INTO original_positions (division_code, position_code,
+mas_number, military_rank_code) VALUES ("А", 555, 120, 224);
+-- Пожарный
+INSERT INTO original_positions (division_code, position_code,
+mas_number, military_rank_code) VALUES ("А", 666, 120, 223);
+-- Пожарный
+INSERT INTO original_positions (division_code, position_code,
+mas_number, military_rank_code) VALUES ("А", 666, 120, 223);
+-- Водитель - пожарный
+INSERT INTO original_positions (division_code, position_code,
+mas_number, military_rank_code, equipment_by_state) 
+VALUES ("А", 777, 837, 223, "АЦ-пожарная");
+-- Командир отделения
+INSERT INTO original_positions (division_code, position_code,
+mas_number, military_rank_code) VALUES ("А", 444, 331, 225);
+-- Старший пожарный
+INSERT INTO original_positions (division_code, position_code,
+mas_number, military_rank_code) VALUES ("А", 555, 120, 224);
+-- Пожарный
+INSERT INTO original_positions (division_code, position_code,
+mas_number, military_rank_code) VALUES ("А", 666, 120, 223);
+-- Пожарный
+INSERT INTO original_positions (division_code, position_code,
+mas_number, military_rank_code) VALUES ("А", 666, 120, 223);
+-- Водитель - пожарный
+INSERT INTO original_positions (division_code, position_code,
+mas_number, military_rank_code, equipment_by_state) 
+VALUES ("А", 777, 837, 223, "АЦ-пожарная");
+-- Командир отделения
+INSERT INTO original_positions (division_code, position_code,
+mas_number, military_rank_code) VALUES ("А", 444, 331, 225);
+-- Старший пожарный
+INSERT INTO original_positions (division_code, position_code,
+mas_number, military_rank_code) VALUES ("А", 555, 120, 224);
+-- Пожарный
+INSERT INTO original_positions (division_code, position_code,
+mas_number, military_rank_code) VALUES ("А", 666, 120, 223);
+-- Пожарный
+INSERT INTO original_positions (division_code, position_code,
+mas_number, military_rank_code) VALUES ("А", 666, 120, 223);
+-- Водитель - пожарный
+INSERT INTO original_positions (division_code, position_code,
+mas_number, military_rank_code, equipment_by_state) 
+VALUES ("А", 777, 837, 223, "АЦ-пожарная");
+
+-- вставка военных комиссариатов
+-- Великий Новгород
+INSERT INTO military_commissariat 
+(mc_name, mc_boss, address, phone_number)
+VALUES ("ВК г.о. Великий Новгород", "С.Д. Солдатов",
+"г. Великий Новгород, ул. Нехинская, д. 5", "32-15-20");
+-- Старая Русса
+INSERT INTO military_commissariat 
+(mc_name, mc_boss, address, phone_number)
+VALUES ("ВК г. Старая Русса", "Г.В. Калашинков",
+"г. Старая Русса, ул. Ленина, д. 4", "52-17-39");
+-- Валдай
+INSERT INTO military_commissariat 
+(mc_name, mc_boss, address, phone_number)
+VALUES ("ВК г. Валдай", "И.И. Пистолетов",
+"г. Валдай, ул. Кирова, д. 76а", "12-47-33");
+--Окуловка
+INSERT INTO military_commissariat 
+(mc_name, mc_boss, address, phone_number)
+VALUES ("ВК г. Окуловка", "Р.С. Патронов",
+"г. Окуловка, ул. Победы, д. 17б", "92-00-34");
+
+--вставка предприятий поставщиков
+INSERT INTO supplier_company 
+(company_name, address, phone_number, contact_person)
+VALUES ("ООО ТРЕСТ-33", "г. Великий Новгород, ул. Рабочая, д. 47", "42-10-54",
+"П.С. Машинкин");
+
+INSERT INTO supplier_company 
+(company_name, address, phone_number, contact_person)
+VALUES ("ООО Деловой приятель", "г. Великий Новгород, ул. Псковская, д. 13", "12-11-44",
+"Н.П. Карманов");
+
+--Пробные запросы для питона
+INSERT INTO military_staff(military_id, position_id, mas_number, position_code, military_rank_code,
+full_name, year_of_birth, educationT, civil_specialty, mc_id, family_status,
+address, date_appointment, id_equipment, category,)
+VALUES ();
+
+
